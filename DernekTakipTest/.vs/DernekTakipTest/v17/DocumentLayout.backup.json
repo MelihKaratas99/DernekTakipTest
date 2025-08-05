@@ -3,8 +3,32 @@
   "WorkspaceRootPath": "C:\\Users\\hp\\Desktop\\DernekTakipTest\\DernekTakipTest\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{D9FE316D-6D32-4AE5-99F3-C193A543B24D}|DernekTakipTest\\DernekTakipTest.csproj|c:\\users\\hp\\desktop\\dernektakiptest\\dernektakiptest\\dernektakiptest\\databasehelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{D9FE316D-6D32-4AE5-99F3-C193A543B24D}|DernekTakipTest\\DernekTakipTest.csproj|C:\\Users\\hp\\Desktop\\DernekTakipTest\\DernekTakipTest\\dernektakiptest\\databasehelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{D9FE316D-6D32-4AE5-99F3-C193A543B24D}|DernekTakipTest\\DernekTakipTest.csproj|solutionrelative:dernektakiptest\\databasehelper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D9FE316D-6D32-4AE5-99F3-C193A543B24D}|DernekTakipTest\\DernekTakipTest.csproj|c:\\users\\hp\\desktop\\dernektakiptest\\dernektakiptest\\dernektakiptest\\uyeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D9FE316D-6D32-4AE5-99F3-C193A543B24D}|DernekTakipTest\\DernekTakipTest.csproj|solutionrelative:dernektakiptest\\uyeservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D9FE316D-6D32-4AE5-99F3-C193A543B24D}|DernekTakipTest\\DernekTakipTest.csproj|C:\\Users\\hp\\Desktop\\DernekTakipTest\\DernekTakipTest\\dernektakiptest\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D9FE316D-6D32-4AE5-99F3-C193A543B24D}|DernekTakipTest\\DernekTakipTest.csproj|solutionrelative:dernektakiptest\\userservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D9FE316D-6D32-4AE5-99F3-C193A543B24D}|DernekTakipTest\\DernekTakipTest.csproj|c:\\users\\hp\\desktop\\dernektakiptest\\dernektakiptest\\dernektakiptest\\adminuyeyonetimipage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D9FE316D-6D32-4AE5-99F3-C193A543B24D}|DernekTakipTest\\DernekTakipTest.csproj|solutionrelative:dernektakiptest\\adminuyeyonetimipage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D9FE316D-6D32-4AE5-99F3-C193A543B24D}|DernekTakipTest\\DernekTakipTest.csproj|c:\\users\\hp\\desktop\\dernektakiptest\\dernektakiptest\\dernektakiptest\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D9FE316D-6D32-4AE5-99F3-C193A543B24D}|DernekTakipTest\\DernekTakipTest.csproj|solutionrelative:dernektakiptest\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D9FE316D-6D32-4AE5-99F3-C193A543B24D}|DernekTakipTest\\DernekTakipTest.csproj|C:\\Users\\hp\\Desktop\\DernekTakipTest\\DernekTakipTest\\dernektakiptest\\uyeekleduzenleform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D9FE316D-6D32-4AE5-99F3-C193A543B24D}|DernekTakipTest\\DernekTakipTest.csproj|solutionrelative:dernektakiptest\\uyeekleduzenleform.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{D9FE316D-6D32-4AE5-99F3-C193A543B24D}|DernekTakipTest\\DernekTakipTest.csproj|c:\\users\\hp\\desktop\\dernektakiptest\\dernektakiptest\\dernektakiptest\\adminanasayfapage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{D9FE316D-6D32-4AE5-99F3-C193A543B24D}|DernekTakipTest\\DernekTakipTest.csproj|solutionrelative:dernektakiptest\\adminanasayfapage.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -14,8 +38,34 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 7,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "AdminUyeYonetimiPage.cs",
+              "DocumentMoniker": "C:\\Users\\hp\\Desktop\\DernekTakipTest\\DernekTakipTest\\DernekTakipTest\\AdminUyeYonetimiPage.cs",
+              "RelativeDocumentMoniker": "DernekTakipTest\\AdminUyeYonetimiPage.cs",
+              "ToolTip": "C:\\Users\\hp\\Desktop\\DernekTakipTest\\DernekTakipTest\\DernekTakipTest\\AdminUyeYonetimiPage.cs",
+              "RelativeToolTip": "DernekTakipTest\\AdminUyeYonetimiPage.cs",
+              "ViewState": "AgIAAKsAAAAAAAAAAAAIwMUAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-05T12:35:28.553Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "User.cs",
+              "DocumentMoniker": "C:\\Users\\hp\\Desktop\\DernekTakipTest\\DernekTakipTest\\DernekTakipTest\\User.cs",
+              "RelativeDocumentMoniker": "DernekTakipTest\\User.cs",
+              "ToolTip": "C:\\Users\\hp\\Desktop\\DernekTakipTest\\DernekTakipTest\\DernekTakipTest\\User.cs",
+              "RelativeToolTip": "DernekTakipTest\\User.cs",
+              "ViewState": "AgIAAG0AAAAAAAAAAAAuwHsAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-05T12:32:08.317Z",
+              "EditorCaption": ""
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
@@ -25,6 +75,36 @@
               "Name": "ST:1:0:{d212f56b-c48a-434c-a121-1c5d80b59b9f}"
             },
             {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{aa2115a1-9712-457b-9047-dbb71ca2cdd2}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "AdminAnaSayfaPage.cs",
+              "DocumentMoniker": "C:\\Users\\hp\\Desktop\\DernekTakipTest\\DernekTakipTest\\DernekTakipTest\\AdminAnaSayfaPage.cs",
+              "RelativeDocumentMoniker": "DernekTakipTest\\AdminAnaSayfaPage.cs",
+              "ToolTip": "C:\\Users\\hp\\Desktop\\DernekTakipTest\\DernekTakipTest\\DernekTakipTest\\AdminAnaSayfaPage.cs",
+              "RelativeToolTip": "DernekTakipTest\\AdminAnaSayfaPage.cs",
+              "ViewState": "AgIAAEcAAAAAAAAAAAAIwGEAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-05T12:30:45.528Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "UserService.cs",
+              "DocumentMoniker": "C:\\Users\\hp\\Desktop\\DernekTakipTest\\DernekTakipTest\\DernekTakipTest\\UserService.cs",
+              "RelativeDocumentMoniker": "DernekTakipTest\\UserService.cs",
+              "ToolTip": "C:\\Users\\hp\\Desktop\\DernekTakipTest\\DernekTakipTest\\DernekTakipTest\\UserService.cs",
+              "RelativeToolTip": "DernekTakipTest\\UserService.cs",
+              "ViewState": "AgIAAEYBAAAAAAAAAAAQwFIBAABoAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-05T12:24:40.882Z",
+              "EditorCaption": ""
+            },
+            {
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "DatabaseHelper.cs",
@@ -32,9 +112,35 @@
               "RelativeDocumentMoniker": "DernekTakipTest\\DatabaseHelper.cs",
               "ToolTip": "C:\\Users\\hp\\Desktop\\DernekTakipTest\\DernekTakipTest\\DernekTakipTest\\DatabaseHelper.cs",
               "RelativeToolTip": "DernekTakipTest\\DatabaseHelper.cs",
-              "ViewState": "AgIAAOEBAAAAAAAAAAAYwPYBAAABAAAAAAAAAA==",
+              "ViewState": "AgIAACoAAAAAAAAAAAAIwDkAAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-08-05T10:09:42.544Z",
+              "WhenOpened": "2025-08-05T12:24:37.532Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "UyeEkleDuzenleForm.cs",
+              "DocumentMoniker": "C:\\Users\\hp\\Desktop\\DernekTakipTest\\DernekTakipTest\\DernekTakipTest\\UyeEkleDuzenleForm.cs",
+              "RelativeDocumentMoniker": "DernekTakipTest\\UyeEkleDuzenleForm.cs",
+              "ToolTip": "C:\\Users\\hp\\Desktop\\DernekTakipTest\\DernekTakipTest\\DernekTakipTest\\UyeEkleDuzenleForm.cs",
+              "RelativeToolTip": "DernekTakipTest\\UyeEkleDuzenleForm.cs",
+              "ViewState": "AgIAAFwBAAAAAAAAAAAAAGgBAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-05T12:02:56.575Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "UyeService.cs",
+              "DocumentMoniker": "C:\\Users\\hp\\Desktop\\DernekTakipTest\\DernekTakipTest\\DernekTakipTest\\UyeService.cs",
+              "RelativeDocumentMoniker": "DernekTakipTest\\UyeService.cs",
+              "ToolTip": "C:\\Users\\hp\\Desktop\\DernekTakipTest\\DernekTakipTest\\DernekTakipTest\\UyeService.cs",
+              "RelativeToolTip": "DernekTakipTest\\UyeService.cs",
+              "ViewState": "AgIAAHIBAAAAAAAAAAAIwIwBAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2025-08-05T12:02:10.743Z",
               "EditorCaption": ""
             }
           ]

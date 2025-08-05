@@ -17,7 +17,7 @@ namespace DernekTakipSistemi
         }
 
         /// <summary>
-        /// Kullanıcılar tablosunu oluşturur (yoksa)
+        /// Kullanıcılar tablosunu oluşturur (yoksa) - UyelikTarihi ile
         /// </summary>
         private void CreateUsersTableIfNotExists()
         {
@@ -28,23 +28,30 @@ namespace DernekTakipSistemi
                     connection.Open();
 
                     string createTable = @"
-                        CREATE TABLE IF NOT EXISTS Users (
-                            UserID AUTOINCREMENT PRIMARY KEY,
+                        CREATE TABLE Users (
+                            UserID COUNTER PRIMARY KEY,
                             KullaniciAdi TEXT(50) NOT NULL,
                             Sifre TEXT(255) NOT NULL,
                             Ad TEXT(50) NOT NULL,
                             Soyad TEXT(50) NOT NULL,
                             Email TEXT(100),
                             Role INTEGER DEFAULT 1,
-                            IsActive YESNO DEFAULT Yes,
-                            KayitTarihi DATETIME DEFAULT Now(),
+                            IsActive YESNO DEFAULT True,
+                            UyelikTarihi DATETIME DEFAULT Now(),
                             SonGirisTarihi DATETIME,
                             UyeID INTEGER
                         )";
 
                     using (var command = new OleDbCommand(createTable, connection))
                     {
-                        command.ExecuteNonQuery();
+                        try
+                        {
+                            command.ExecuteNonQuery();
+                        }
+                        catch
+                        {
+                            // Tablo zaten varsa hata vermez
+                        }
                     }
                 }
             }
@@ -69,28 +76,36 @@ namespace DernekTakipSistemi
                     string checkAdmin = "SELECT COUNT(*) FROM Users WHERE Role = 2";
                     using (var command = new OleDbCommand(checkAdmin, connection))
                     {
-                        int adminCount = (int)command.ExecuteScalar();
-
-                        if (adminCount == 0)
+                        try
                         {
-                            // Varsayılan admin oluştur
-                            string insertAdmin = @"
-                                INSERT INTO Users (KullaniciAdi, Sifre, Ad, Soyad, Email, Role, IsActive, KayitTarihi)
-                                VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                            object result = command.ExecuteScalar();
+                            int adminCount = result != null ? Convert.ToInt32(result) : 0;
 
-                            using (var cmd = new OleDbCommand(insertAdmin, connection))
+                            if (adminCount == 0)
                             {
-                                cmd.Parameters.AddWithValue("@KullaniciAdi", "admin");
-                                cmd.Parameters.AddWithValue("@Sifre", "123456"); // Basit şifre
-                                cmd.Parameters.AddWithValue("@Ad", "Sistem");
-                                cmd.Parameters.AddWithValue("@Soyad", "Yöneticisi");
-                                cmd.Parameters.AddWithValue("@Email", "admin@dernek.com");
-                                cmd.Parameters.AddWithValue("@Role", (int)UserRole.Yonetici);
-                                cmd.Parameters.AddWithValue("@IsActive", true);
-                                cmd.Parameters.AddWithValue("@KayitTarihi", DateTime.Now);
+                                // Varsayılan admin oluştur
+                                string insertAdmin = @"
+                                    INSERT INTO Users (KullaniciAdi, Sifre, Ad, Soyad, Email, Role, IsActive, UyelikTarihi)
+                                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-                                cmd.ExecuteNonQuery();
+                                using (var cmd = new OleDbCommand(insertAdmin, connection))
+                                {
+                                    cmd.Parameters.AddWithValue("@KullaniciAdi", "admin");
+                                    cmd.Parameters.AddWithValue("@Sifre", "123456");
+                                    cmd.Parameters.AddWithValue("@Ad", "Sistem");
+                                    cmd.Parameters.AddWithValue("@Soyad", "Yöneticisi");
+                                    cmd.Parameters.AddWithValue("@Email", "admin@dernek.com");
+                                    cmd.Parameters.AddWithValue("@Role", 2);
+                                    cmd.Parameters.AddWithValue("@IsActive", true);
+                                    cmd.Parameters.AddWithValue("@UyelikTarihi", DateTime.Now);
+
+                                    cmd.ExecuteNonQuery();
+                                }
                             }
+                        }
+                        catch
+                        {
+                            // Tablo yoksa sessizce devam et
                         }
                     }
                 }
@@ -102,7 +117,7 @@ namespace DernekTakipSistemi
         }
 
         /// <summary>
-        /// Kullanıcı giriş kontrolü
+        /// Kullanıcı giriş kontrolü - UyelikTarihi ile güvenli okuma
         /// </summary>
         public User Login(string kullaniciAdi, string sifre)
         {
@@ -124,6 +139,19 @@ namespace DernekTakipSistemi
                         {
                             if (reader.Read())
                             {
+                                // Güvenli tarih okuma
+                                DateTime uyelikTarihi;
+                                try
+                                {
+                                    uyelikTarihi = reader["UyelikTarihi"] == DBNull.Value
+                                        ? DateTime.Now
+                                        : Convert.ToDateTime(reader["UyelikTarihi"]);
+                                }
+                                catch
+                                {
+                                    uyelikTarihi = DateTime.Now;
+                                }
+
                                 var user = new User
                                 {
                                     UserID = Convert.ToInt32(reader["UserID"]),
@@ -134,7 +162,7 @@ namespace DernekTakipSistemi
                                     Email = reader["Email"]?.ToString(),
                                     Role = (UserRole)Convert.ToInt32(reader["Role"]),
                                     IsActive = Convert.ToBoolean(reader["IsActive"]),
-                                    KayitTarihi = Convert.ToDateTime(reader["KayitTarihi"]),
+                                    KayitTarihi = uyelikTarihi, // UyelikTarihi kullanıyoruz
                                     UyeID = reader["UyeID"] == DBNull.Value ? null : (int?)Convert.ToInt32(reader["UyeID"])
                                 };
 
@@ -182,7 +210,7 @@ namespace DernekTakipSistemi
         }
 
         /// <summary>
-        /// Yeni kullanıcı oluştur
+        /// Yeni kullanıcı oluştur - UyelikTarihi ile
         /// </summary>
         public bool CreateUser(User user)
         {
@@ -205,7 +233,7 @@ namespace DernekTakipSistemi
                 {
                     connection.Open();
                     string query = @"
-                        INSERT INTO Users (KullaniciAdi, Sifre, Ad, Soyad, Email, Role, IsActive, KayitTarihi, UyeID)
+                        INSERT INTO Users (KullaniciAdi, Sifre, Ad, Soyad, Email, Role, IsActive, UyelikTarihi, UyeID)
                         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
                     using (var command = new OleDbCommand(query, connection))
@@ -217,7 +245,7 @@ namespace DernekTakipSistemi
                         command.Parameters.AddWithValue("@Email", user.Email ?? "");
                         command.Parameters.AddWithValue("@Role", (int)user.Role);
                         command.Parameters.AddWithValue("@IsActive", user.IsActive);
-                        command.Parameters.AddWithValue("@KayitTarihi", user.KayitTarihi);
+                        command.Parameters.AddWithValue("@UyelikTarihi", user.KayitTarihi);
                         command.Parameters.AddWithValue("@UyeID", user.UyeID ?? (object)DBNull.Value);
 
                         int result = command.ExecuteNonQuery();
@@ -253,7 +281,8 @@ namespace DernekTakipSistemi
                     using (var command = new OleDbCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@KullaniciAdi", kullaniciAdi);
-                        int count = (int)command.ExecuteScalar();
+                        object result = command.ExecuteScalar();
+                        int count = result != null ? Convert.ToInt32(result) : 0;
                         return count > 0;
                     }
                 }
@@ -265,7 +294,7 @@ namespace DernekTakipSistemi
         }
 
         /// <summary>
-        /// Tüm kullanıcıları getir (sadece yöneticiler için)
+        /// Tüm kullanıcıları getir - UyelikTarihi ile güvenli okuma
         /// </summary>
         public List<User> GetAllUsers()
         {
@@ -283,6 +312,19 @@ namespace DernekTakipSistemi
                     {
                         while (reader.Read())
                         {
+                            // Güvenli tarih okuma
+                            DateTime uyelikTarihi;
+                            try
+                            {
+                                uyelikTarihi = reader["UyelikTarihi"] == DBNull.Value
+                                    ? DateTime.Now
+                                    : Convert.ToDateTime(reader["UyelikTarihi"]);
+                            }
+                            catch
+                            {
+                                uyelikTarihi = DateTime.Now;
+                            }
+
                             users.Add(new User
                             {
                                 UserID = Convert.ToInt32(reader["UserID"]),
@@ -292,7 +334,7 @@ namespace DernekTakipSistemi
                                 Email = reader["Email"]?.ToString(),
                                 Role = (UserRole)Convert.ToInt32(reader["Role"]),
                                 IsActive = Convert.ToBoolean(reader["IsActive"]),
-                                KayitTarihi = Convert.ToDateTime(reader["KayitTarihi"]),
+                                KayitTarihi = uyelikTarihi, // UyelikTarihi kullanıyoruz
                                 SonGirisTarihi = reader["SonGirisTarihi"] == DBNull.Value ? null : (DateTime?)Convert.ToDateTime(reader["SonGirisTarihi"]),
                                 UyeID = reader["UyeID"] == DBNull.Value ? null : (int?)Convert.ToInt32(reader["UyeID"])
                             });

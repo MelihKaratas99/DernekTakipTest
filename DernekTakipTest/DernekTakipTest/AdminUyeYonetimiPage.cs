@@ -150,23 +150,50 @@ namespace DernekTakipSistemi.Pages.Admin
             try
             {
                 uyelerDataGrid.Rows.Clear();
+
+                // UyeService null kontrolü
+                if (uyeService == null)
+                {
+                    uyeService = new UyeService();
+                }
+
                 List<Uye> uyeler = uyeService.TumUyeleriGetir();
+
+                // Uyeler listesi null kontrolü
+                if (uyeler == null)
+                {
+                    MessageBox.Show("Üye listesi alınamadı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
 
                 foreach (Uye uye in uyeler)
                 {
+                    // Her bir üye için null kontrolü
+                    if (uye == null) continue;
+
                     uyelerDataGrid.Rows.Add(
                         uye.UyeID,
-                        uye.TC,
-                        uye.AdSoyad,
-                        uye.Telefon,
+                        uye.TC ?? "",
+                        uye.AdSoyad ?? "",
+                        uye.Telefon ?? "",
                         uye.Email ?? "",
-                        uye.UyelikDurumu
+                        uye.UyelikDurumu ?? "Aktif"
                     );
+                }
+
+                // Eğer hiç üye yoksa bilgilendirme
+                if (uyeler.Count == 0)
+                {
+                    MessageBox.Show("Henüz kayıtlı üye bulunmamaktadır.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Veriler yüklenirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Veriler yüklenirken hata: {ex.Message}\n\nDetay: {ex.StackTrace}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                // Debug için ek bilgi
+                System.Diagnostics.Debug.WriteLine($"LoadUyeler Hatası: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"StackTrace: {ex.StackTrace}");
             }
         }
 

@@ -6,7 +6,7 @@ using System.Windows.Forms;
 namespace DernekTakipSistemi
 {
     /// <summary>
-    /// Üye işlemleri servisi
+    /// Üye işlemleri servisi (Access 2001 uyumlu - Helper metodları ile)
     /// </summary>
     public class UyeService
     {
@@ -18,8 +18,101 @@ namespace DernekTakipSistemi
             CreateUyelerTableIfNotExists();
         }
 
+        #region Helper Metodları
+
         /// <summary>
-        /// Üyeler tablosunu oluşturur (yoksa)
+        /// DataReader'dan güvenli DateTime okur
+        /// </summary>
+        private DateTime SafeGetDateTime(OleDbDataReader reader, string columnName, DateTime defaultValue = default)
+        {
+            try
+            {
+                if (reader[columnName] == DBNull.Value || reader[columnName] == null)
+                {
+                    return defaultValue == default ? DateTime.Now : defaultValue;
+                }
+                return Convert.ToDateTime(reader[columnName]);
+            }
+            catch
+            {
+                return defaultValue == default ? DateTime.Now : defaultValue;
+            }
+        }
+
+        /// <summary>
+        /// DataReader'dan güvenli nullable DateTime okur
+        /// </summary>
+        private DateTime? SafeGetNullableDateTime(OleDbDataReader reader, string columnName)
+        {
+            try
+            {
+                if (reader[columnName] == DBNull.Value || reader[columnName] == null)
+                {
+                    return null;
+                }
+                return Convert.ToDateTime(reader[columnName]);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// DataReader'dan güvenli string okur
+        /// </summary>
+        private string SafeGetString(OleDbDataReader reader, string columnName, string defaultValue = "")
+        {
+            try
+            {
+                return reader[columnName]?.ToString() ?? defaultValue;
+            }
+            catch
+            {
+                return defaultValue;
+            }
+        }
+
+        /// <summary>
+        /// DataReader'dan güvenli decimal okur
+        /// </summary>
+        private decimal SafeGetDecimal(OleDbDataReader reader, string columnName, decimal defaultValue = 0)
+        {
+            try
+            {
+                if (reader[columnName] == DBNull.Value)
+                    return defaultValue;
+                return Convert.ToDecimal(reader[columnName]);
+            }
+            catch
+            {
+                return defaultValue;
+            }
+        }
+
+        /// <summary>
+        /// DataReader'dan güvenli int okur
+        /// </summary>
+        private int SafeGetInt(OleDbDataReader reader, string columnName, int defaultValue = 0)
+        {
+            try
+            {
+                if (reader[columnName] == DBNull.Value)
+                    return defaultValue;
+                return Convert.ToInt32(reader[columnName]);
+            }
+            catch
+            {
+                return defaultValue;
+            }
+        }
+
+        #endregion
+
+        #region Tablo Oluşturma
+
+        /// <summary>
+        /// Üyeler tablosunu oluşturur (yoksa) - Access 2001 uyumlu
         /// </summary>
         private void CreateUyelerTableIfNotExists()
         {
@@ -29,9 +122,10 @@ namespace DernekTakipSistemi
                 {
                     connection.Open();
 
+                    // Access 2001 için uyumlu tablo oluşturma
                     string createTable = @"
                         CREATE TABLE Uyeler (
-                            UyeID AUTOINCREMENT PRIMARY KEY,
+                            UyeID COUNTER PRIMARY KEY,
                             TC TEXT(11) NOT NULL,
                             Ad TEXT(50) NOT NULL,
                             Soyad TEXT(50) NOT NULL,
@@ -63,6 +157,10 @@ namespace DernekTakipSistemi
             }
         }
 
+        #endregion
+
+        #region Üye Getirme İşlemleri
+
         /// <summary>
         /// Tüm üyeleri getirir
         /// </summary>
@@ -84,17 +182,17 @@ namespace DernekTakipSistemi
                         {
                             uyeler.Add(new Uye
                             {
-                                UyeID = Convert.ToInt32(reader["UyeID"]),
-                                TC = reader["TC"].ToString(),
-                                Ad = reader["Ad"].ToString(),
-                                Soyad = reader["Soyad"].ToString(),
-                                Telefon = reader["Telefon"]?.ToString() ?? "",
-                                Email = reader["Email"]?.ToString() ?? "",
-                                Adres = reader["Adres"]?.ToString() ?? "",
-                                UyelikTarihi = Convert.ToDateTime(reader["UyelikTarihi"]),
-                                UyelikDurumu = reader["UyelikDurumu"].ToString(),
-                                AidatBorcu = reader["AidatBorcu"] == DBNull.Value ? 0 : Convert.ToDecimal(reader["AidatBorcu"]),
-                                SonOdemeTarihi = reader["SonOdemeTarihi"] == DBNull.Value ? null : (DateTime?)Convert.ToDateTime(reader["SonOdemeTarihi"])
+                                UyeID = SafeGetInt(reader, "UyeID"),
+                                TC = SafeGetString(reader, "TC"),
+                                Ad = SafeGetString(reader, "Ad"),
+                                Soyad = SafeGetString(reader, "Soyad"),
+                                Telefon = SafeGetString(reader, "Telefon"),
+                                Email = SafeGetString(reader, "Email"),
+                                Adres = SafeGetString(reader, "Adres"),
+                                UyelikTarihi = SafeGetDateTime(reader, "UyelikTarihi"),
+                                UyelikDurumu = SafeGetString(reader, "UyelikDurumu", "Aktif"),
+                                AidatBorcu = SafeGetDecimal(reader, "AidatBorcu"),
+                                SonOdemeTarihi = SafeGetNullableDateTime(reader, "SonOdemeTarihi")
                             });
                         }
                     }
@@ -130,17 +228,17 @@ namespace DernekTakipSistemi
                             {
                                 return new Uye
                                 {
-                                    UyeID = Convert.ToInt32(reader["UyeID"]),
-                                    TC = reader["TC"].ToString(),
-                                    Ad = reader["Ad"].ToString(),
-                                    Soyad = reader["Soyad"].ToString(),
-                                    Telefon = reader["Telefon"]?.ToString() ?? "",
-                                    Email = reader["Email"]?.ToString() ?? "",
-                                    Adres = reader["Adres"]?.ToString() ?? "",
-                                    UyelikTarihi = Convert.ToDateTime(reader["UyelikTarihi"]),
-                                    UyelikDurumu = reader["UyelikDurumu"].ToString(),
-                                    AidatBorcu = reader["AidatBorcu"] == DBNull.Value ? 0 : Convert.ToDecimal(reader["AidatBorcu"]),
-                                    SonOdemeTarihi = reader["SonOdemeTarihi"] == DBNull.Value ? null : (DateTime?)Convert.ToDateTime(reader["SonOdemeTarihi"])
+                                    UyeID = SafeGetInt(reader, "UyeID"),
+                                    TC = SafeGetString(reader, "TC"),
+                                    Ad = SafeGetString(reader, "Ad"),
+                                    Soyad = SafeGetString(reader, "Soyad"),
+                                    Telefon = SafeGetString(reader, "Telefon"),
+                                    Email = SafeGetString(reader, "Email"),
+                                    Adres = SafeGetString(reader, "Adres"),
+                                    UyelikTarihi = SafeGetDateTime(reader, "UyelikTarihi"),
+                                    UyelikDurumu = SafeGetString(reader, "UyelikDurumu", "Aktif"),
+                                    AidatBorcu = SafeGetDecimal(reader, "AidatBorcu"),
+                                    SonOdemeTarihi = SafeGetNullableDateTime(reader, "SonOdemeTarihi")
                                 };
                             }
                         }
@@ -187,17 +285,17 @@ namespace DernekTakipSistemi
                             {
                                 sonuclar.Add(new Uye
                                 {
-                                    UyeID = Convert.ToInt32(reader["UyeID"]),
-                                    TC = reader["TC"].ToString(),
-                                    Ad = reader["Ad"].ToString(),
-                                    Soyad = reader["Soyad"].ToString(),
-                                    Telefon = reader["Telefon"]?.ToString() ?? "",
-                                    Email = reader["Email"]?.ToString() ?? "",
-                                    Adres = reader["Adres"]?.ToString() ?? "",
-                                    UyelikTarihi = Convert.ToDateTime(reader["UyelikTarihi"]),
-                                    UyelikDurumu = reader["UyelikDurumu"].ToString(),
-                                    AidatBorcu = reader["AidatBorcu"] == DBNull.Value ? 0 : Convert.ToDecimal(reader["AidatBorcu"]),
-                                    SonOdemeTarihi = reader["SonOdemeTarihi"] == DBNull.Value ? null : (DateTime?)Convert.ToDateTime(reader["SonOdemeTarihi"])
+                                    UyeID = SafeGetInt(reader, "UyeID"),
+                                    TC = SafeGetString(reader, "TC"),
+                                    Ad = SafeGetString(reader, "Ad"),
+                                    Soyad = SafeGetString(reader, "Soyad"),
+                                    Telefon = SafeGetString(reader, "Telefon"),
+                                    Email = SafeGetString(reader, "Email"),
+                                    Adres = SafeGetString(reader, "Adres"),
+                                    UyelikTarihi = SafeGetDateTime(reader, "UyelikTarihi"),
+                                    UyelikDurumu = SafeGetString(reader, "UyelikDurumu", "Aktif"),
+                                    AidatBorcu = SafeGetDecimal(reader, "AidatBorcu"),
+                                    SonOdemeTarihi = SafeGetNullableDateTime(reader, "SonOdemeTarihi")
                                 });
                             }
                         }
@@ -210,6 +308,92 @@ namespace DernekTakipSistemi
             }
 
             return sonuclar;
+        }
+
+        #endregion
+
+        #region Üye Ekleme/Güncelleme/Silme
+
+        /// <summary>
+        /// Yeni üye ekler - Access 2001 uyumlu
+        /// </summary>
+        public bool UyeEkle(Uye uye)
+        {
+            try
+            {
+                using (var connection = dbHelper.GetConnection())
+                {
+                    connection.Open();
+
+                    // Access için daha basit sorgu - varsayılan değerler veritabanında ayarlanmış
+                    string query = @"
+                INSERT INTO Uyeler (TC, Ad, Soyad, Telefon, Email, Adres, UyelikTarihi, UyelikDurumu, AidatBorcu)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+                    using (var command = new OleDbCommand(query, connection))
+                    {
+                        // Parametreleri tek tek ekle ve veri türünü kontrol et
+                        command.Parameters.Add("@TC", OleDbType.VarChar, 11).Value = uye.TC ?? "";
+                        command.Parameters.Add("@Ad", OleDbType.VarChar, 50).Value = uye.Ad ?? "";
+                        command.Parameters.Add("@Soyad", OleDbType.VarChar, 50).Value = uye.Soyad ?? "";
+                        command.Parameters.Add("@Telefon", OleDbType.VarChar, 15).Value = uye.Telefon ?? "";
+                        command.Parameters.Add("@Email", OleDbType.VarChar, 100).Value = uye.Email ?? "";
+                        command.Parameters.Add("@Adres", OleDbType.LongVarChar).Value = uye.Adres ?? "";
+                        command.Parameters.Add("@UyelikTarihi", OleDbType.Date).Value = uye.UyelikTarihi;
+                        command.Parameters.Add("@UyelikDurumu", OleDbType.VarChar, 10).Value = uye.UyelikDurumu ?? "Aktif";
+                        command.Parameters.Add("@AidatBorcu", OleDbType.Currency).Value = uye.AidatBorcu;
+
+                        int result = command.ExecuteNonQuery();
+                        return result > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Üye eklenirken hata: {ex.Message}\n\nSQL Detay: Veri türü uyumsuzluğu olabilir.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                System.Diagnostics.Debug.WriteLine($"UyeEkle Hatası: {ex.Message}");
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Üye günceller - Access 2001 uyumlu
+        /// </summary>
+        public bool UyeGuncelle(Uye uye)
+        {
+            try
+            {
+                using (var connection = dbHelper.GetConnection())
+                {
+                    connection.Open();
+                    string query = @"
+                UPDATE Uyeler SET TC=?, Ad=?, Soyad=?, Telefon=?, Email=?, Adres=?, UyelikTarihi=?, UyelikDurumu=?
+                WHERE UyeID=?";
+
+                    using (var command = new OleDbCommand(query, connection))
+                    {
+                        // Parametreleri veri türü ile birlikte ekle
+                        command.Parameters.Add("@TC", OleDbType.VarChar, 11).Value = uye.TC ?? "";
+                        command.Parameters.Add("@Ad", OleDbType.VarChar, 50).Value = uye.Ad ?? "";
+                        command.Parameters.Add("@Soyad", OleDbType.VarChar, 50).Value = uye.Soyad ?? "";
+                        command.Parameters.Add("@Telefon", OleDbType.VarChar, 15).Value = uye.Telefon ?? "";
+                        command.Parameters.Add("@Email", OleDbType.VarChar, 100).Value = uye.Email ?? "";
+                        command.Parameters.Add("@Adres", OleDbType.LongVarChar).Value = uye.Adres ?? "";
+                        command.Parameters.Add("@UyelikTarihi", OleDbType.Date).Value = uye.UyelikTarihi;
+                        command.Parameters.Add("@UyelikDurumu", OleDbType.VarChar, 10).Value = uye.UyelikDurumu ?? "Aktif";
+                        command.Parameters.Add("@UyeID", OleDbType.Integer).Value = uye.UyeID;
+
+                        int result = command.ExecuteNonQuery();
+                        return result > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Üye güncellenirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                System.Diagnostics.Debug.WriteLine($"UyeGuncelle Hatası: {ex.Message}");
+                return false;
+            }
         }
 
         /// <summary>
@@ -250,5 +434,118 @@ namespace DernekTakipSistemi
 
             return false;
         }
+
+        #endregion
+
+        #region Yardımcı Metodlar
+
+        /// <summary>
+        /// Toplam üye sayısını getirir
+        /// </summary>
+        public int ToplamUyeSayisi()
+        {
+            try
+            {
+                using (var connection = dbHelper.GetConnection())
+                {
+                    connection.Open();
+                    string query = "SELECT COUNT(*) FROM Uyeler";
+
+                    using (var command = new OleDbCommand(query, connection))
+                    {
+                        object result = command.ExecuteScalar();
+                        return result != null ? Convert.ToInt32(result) : 0;
+                    }
+                }
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Aktif üye sayısını getirir
+        /// </summary>
+        public int AktifUyeSayisi()
+        {
+            try
+            {
+                using (var connection = dbHelper.GetConnection())
+                {
+                    connection.Open();
+                    string query = "SELECT COUNT(*) FROM Uyeler WHERE UyelikDurumu = 'Aktif'";
+
+                    using (var command = new OleDbCommand(query, connection))
+                    {
+                        object result = command.ExecuteScalar();
+                        return result != null ? Convert.ToInt32(result) : 0;
+                    }
+                }
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Borçlu üye sayısını getirir
+        /// </summary>
+        public int BorcluUyeSayisi()
+        {
+            try
+            {
+                using (var connection = dbHelper.GetConnection())
+                {
+                    connection.Open();
+                    string query = "SELECT COUNT(*) FROM Uyeler WHERE AidatBorcu > 0";
+
+                    using (var command = new OleDbCommand(query, connection))
+                    {
+                        object result = command.ExecuteScalar();
+                        return result != null ? Convert.ToInt32(result) : 0;
+                    }
+                }
+            }
+            catch
+            {
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// TC kimlik no'ya göre üye var mı kontrol eder
+        /// </summary>
+        public bool TCVarMi(string tc, int excludeUyeID = 0)
+        {
+            try
+            {
+                using (var connection = dbHelper.GetConnection())
+                {
+                    connection.Open();
+                    string query = excludeUyeID > 0
+                        ? "SELECT COUNT(*) FROM Uyeler WHERE TC = ? AND UyeID <> ?"
+                        : "SELECT COUNT(*) FROM Uyeler WHERE TC = ?";
+
+                    using (var command = new OleDbCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@TC", tc);
+                        if (excludeUyeID > 0)
+                            command.Parameters.AddWithValue("@UyeID", excludeUyeID);
+
+                        object result = command.ExecuteScalar();
+                        int count = result != null ? Convert.ToInt32(result) : 0;
+                        return count > 0;
+                    }
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        #endregion
     }
 }

@@ -310,6 +310,14 @@ namespace DernekTakipSistemi
                     return;
                 }
 
+                // TC tekrar kontrolü (edit modunda mevcut üyeyi hariç tut)
+                if (uyeService.TCVarMi(txtTC.Text.Trim(), isEditMode ? editingUye.UyeID : 0))
+                {
+                    MessageBox.Show("Bu TC Kimlik No ile kayıtlı bir üye zaten var.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtTC.Focus();
+                    return;
+                }
+
                 // Üye nesnesi oluştur
                 Uye uye = isEditMode ? editingUye : new Uye();
 
@@ -322,8 +330,15 @@ namespace DernekTakipSistemi
                 uye.UyelikTarihi = dtpUyelikTarihi.Value;
                 uye.UyelikDurumu = cmbDurum.SelectedItem.ToString();
 
+                // AidatBorcu'yu sadece edit modunda koru, yeni eklemede 0 yap
+                if (!isEditMode)
+                {
+                    uye.AidatBorcu = 0; // Yeni üye - borç yok
+                }
+                // Edit modunda AidatBorcu değeri korunur (zaten editingUye'den geldi)
+
                 // Kaydet
-                bool success = isEditMode ? UpdateUye(uye) : SaveUye(uye);
+                bool success = isEditMode ? uyeService.UyeGuncelle(uye) : uyeService.UyeEkle(uye);
 
                 if (success)
                 {
@@ -335,86 +350,6 @@ namespace DernekTakipSistemi
             {
                 MessageBox.Show($"Kaydetme sırasında hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private bool SaveUye(Uye uye)
-        {
-            try
-            {
-                using (var connection = new DatabaseHelper().GetConnection())
-                {
-                    connection.Open();
-                    string query = @"
-                        INSERT INTO Uyeler (TC, Ad, Soyad, Telefon, Email, Adres, UyelikTarihi, UyelikDurumu, AidatBorcu)
-                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-                    using (var command = new OleDbCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@TC", uye.TC);
-                        command.Parameters.AddWithValue("@Ad", uye.Ad);
-                        command.Parameters.AddWithValue("@Soyad", uye.Soyad);
-                        command.Parameters.AddWithValue("@Telefon", uye.Telefon);
-                        command.Parameters.AddWithValue("@Email", uye.Email);
-                        command.Parameters.AddWithValue("@Adres", uye.Adres);
-                        command.Parameters.AddWithValue("@UyelikTarihi", uye.UyelikTarihi);
-                        command.Parameters.AddWithValue("@UyelikDurumu", uye.UyelikDurumu);
-                        command.Parameters.AddWithValue("@AidatBorcu", 0);
-
-                        int result = command.ExecuteNonQuery();
-
-                        if (result > 0)
-                        {
-                            MessageBox.Show("Üye başarıyla eklendi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            return true;
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Üye eklenirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            return false;
-        }
-
-        private bool UpdateUye(Uye uye)
-        {
-            try
-            {
-                using (var connection = new DatabaseHelper().GetConnection())
-                {
-                    connection.Open();
-                    string query = @"
-                        UPDATE Uyeler SET TC=?, Ad=?, Soyad=?, Telefon=?, Email=?, Adres=?, UyelikTarihi=?, UyelikDurumu=?
-                        WHERE UyeID=?";
-
-                    using (var command = new OleDbCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@TC", uye.TC);
-                        command.Parameters.AddWithValue("@Ad", uye.Ad);
-                        command.Parameters.AddWithValue("@Soyad", uye.Soyad);
-                        command.Parameters.AddWithValue("@Telefon", uye.Telefon);
-                        command.Parameters.AddWithValue("@Email", uye.Email);
-                        command.Parameters.AddWithValue("@Adres", uye.Adres);
-                        command.Parameters.AddWithValue("@UyelikTarihi", uye.UyelikTarihi);
-                        command.Parameters.AddWithValue("@UyelikDurumu", uye.UyelikDurumu);
-                        command.Parameters.AddWithValue("@UyeID", uye.UyeID);
-
-                        int result = command.ExecuteNonQuery();
-
-                        if (result > 0)
-                        {
-                            MessageBox.Show("Üye bilgileri başarıyla güncellendi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            return true;
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Üye güncellenirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-            return false;
         }
 
         private void BtnIptal_Click(object sender, EventArgs e)

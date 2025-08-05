@@ -74,19 +74,26 @@ namespace DernekTakipSistemi.Pages.Admin
         {
             try
             {
-                var uyeler = uyeService.TumUyeleriGetir();
-                int toplamUye = uyeler.Count;
-                int aktifUye = uyeler.FindAll(u => u.UyelikDurumu == "Aktif").Count;
+                // UyeService'den güvenli istatistikler al
+                int toplamUye = uyeService.ToplamUyeSayisi();
+                int aktifUye = uyeService.AktifUyeSayisi();
                 int pasifUye = toplamUye - aktifUye;
+                int borcluUye = uyeService.BorcluUyeSayisi();
 
                 CreateStatCard(parent, "👥", "Toplam Üye", toplamUye.ToString(), AccentColor, new Point(20, 50));
                 CreateStatCard(parent, "✅", "Aktif Üye", aktifUye.ToString(), SuccessColor, new Point(200, 50));
                 CreateStatCard(parent, "⏸️", "Pasif Üye", pasifUye.ToString(), DangerColor, new Point(380, 50));
-                CreateStatCard(parent, "📅", "Bu Ay", DateTime.Now.ToString("MMM"), WarningColor, new Point(560, 50));
+                CreateStatCard(parent, "⚠️", "Borçlu Üye", borcluUye.ToString(), WarningColor, new Point(560, 50));
             }
-            catch
+            catch (Exception ex)
             {
+                // Hata durumunda varsayılan kartlar
                 CreateStatCard(parent, "❌", "Hata", "Veri yok", DangerColor, new Point(20, 50));
+                CreateStatCard(parent, "❌", "Hata", "Veri yok", DangerColor, new Point(200, 50));
+                CreateStatCard(parent, "❌", "Hata", "Veri yok", DangerColor, new Point(380, 50));
+                CreateStatCard(parent, "❌", "Hata", "Veri yok", DangerColor, new Point(560, 50));
+
+                System.Diagnostics.Debug.WriteLine($"İstatistik hatası: {ex.Message}");
             }
         }
 

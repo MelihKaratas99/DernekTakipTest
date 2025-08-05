@@ -212,25 +212,52 @@ namespace DernekTakipSistemi
                     // Başarılı giriş
                     CurrentUser.Login(user);
 
-                    MessageBox.Show($"Hoş geldiniz, {user.AdSoyad}!", "Giriş Başarılı",
+                    MessageBox.Show($"Hoş geldiniz, {user.AdSoyad}!\nRol: {user.RoleText}", "Giriş Başarılı",
                         MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                    // Role göre ana formu aç
-                    this.Hide();
+                    // Debug bilgileri
+                    System.Diagnostics.Debug.WriteLine($"User Role: {user.Role}");
+                    System.Diagnostics.Debug.WriteLine($"Is Admin: {user.IsAdmin}");
 
-                    if (user.IsAdmin)
+                    try
                     {
-                        // Yönetici paneli
-                        var adminForm = new AdminMainForm();
-                        adminForm.FormClosed += (s, args) => this.Close();
-                        adminForm.Show();
+                        // Role göre ana formu aç
+                        this.Hide();
+
+                        if (user.IsAdmin)
+                        {
+                            System.Diagnostics.Debug.WriteLine("Admin formu açılıyor...");
+
+                            // Yönetici paneli
+                            AdminMainForm adminForm = new AdminMainForm();
+                            adminForm.FormClosed += (s, args) =>
+                            {
+                                this.Show();
+                                CurrentUser.Logout();
+                            };
+                            adminForm.Show();
+                            adminForm.WindowState = FormWindowState.Maximized;
+                        }
+                        else
+                        {
+                            System.Diagnostics.Debug.WriteLine("Üye formu açılıyor...");
+
+                            // Üye paneli
+                            MemberMainForm memberForm = new MemberMainForm();
+                            memberForm.FormClosed += (s, args) =>
+                            {
+                                this.Show();
+                                CurrentUser.Logout();
+                            };
+                            memberForm.Show();
+                            memberForm.WindowState = FormWindowState.Maximized;
+                        }
                     }
-                    else
+                    catch (Exception formEx)
                     {
-                        // Üye paneli
-                        var memberForm = new MemberMainForm();
-                        memberForm.FormClosed += (s, args) => this.Close();
-                        memberForm.Show();
+                        MessageBox.Show($"Form açılırken hata: {formEx.Message}\n\nDetay: {formEx.StackTrace}",
+                            "Form Hatası", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        this.Show();
                     }
                 }
                 else
@@ -243,7 +270,7 @@ namespace DernekTakipSistemi
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Giriş sırasında hata: {ex.Message}", "Hata",
+                MessageBox.Show($"Giriş sırasında hata: {ex.Message}\n\nDetay: {ex.StackTrace}", "Hata",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally

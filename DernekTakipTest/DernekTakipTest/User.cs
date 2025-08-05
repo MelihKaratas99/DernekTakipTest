@@ -24,7 +24,7 @@ namespace DernekTakipSistemi
         public string Email { get; set; }
         public UserRole Role { get; set; }
         public bool IsActive { get; set; }
-        public DateTime KayitTarihi { get; set; }
+        public DateTime KayitTarihi { get; set; } // ← BU EKLENDİ
         public DateTime? SonGirisTarihi { get; set; }
 
         // Üye ile ilişki (eğer rol Üye ise)
@@ -33,7 +33,7 @@ namespace DernekTakipSistemi
         public User()
         {
             IsActive = true;
-            KayitTarihi = DateTime.Now;
+            KayitTarihi = DateTime.Now; // ← BU EKLENDİ
             Role = UserRole.Uye;
         }
 
