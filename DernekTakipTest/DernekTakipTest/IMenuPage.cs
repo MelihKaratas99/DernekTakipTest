@@ -16,7 +16,7 @@ namespace DernekTakipSistemi.Pages
     }
 
     /// <summary>
-    /// Menü sayfaları için temel UserControl
+    /// Menü sayfaları için temel UserControl - Layout Düzeltilmiş
     /// </summary>
     public abstract class BaseMenuPage : UserControl, IMenuPage
     {
@@ -44,10 +44,11 @@ namespace DernekTakipSistemi.Pages
 
         private void InitializeBaseComponents()
         {
-            // UserControl ayarları
-            this.Size = new Size(1030, 660);
+            // UserControl ayarları - Düzeltilmiş
             this.BackColor = LightGray;
             this.Dock = DockStyle.Fill;
+            this.AutoScroll = true;
+            this.Padding = new Padding(0);
 
             // Sayfa başlığı
             PageTitleLabel = new Label
@@ -56,20 +57,43 @@ namespace DernekTakipSistemi.Pages
                 Font = new Font("Segoe UI", 18, FontStyle.Bold),
                 ForeColor = PrimaryColor,
                 Location = new Point(30, 20),
-                Size = new Size(970, 40),
-                TextAlign = ContentAlignment.MiddleLeft
+                AutoSize = true
             };
 
-            // Ana içerik paneli
+            // Ana içerik paneli - Responsive
             MainContentPanel = new Panel
             {
                 Location = new Point(30, 70),
-                Size = new Size(970, 570),
                 BackColor = LightGray,
-                AutoScroll = true
+                AutoScroll = true,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom
             };
 
             this.Controls.AddRange(new Control[] { PageTitleLabel, MainContentPanel });
+
+            // Resize event'i ekle
+            this.Resize += BaseMenuPage_Resize;
+            this.Load += BaseMenuPage_Load;
+        }
+
+        private void BaseMenuPage_Load(object sender, EventArgs e)
+        {
+            // İlk yüklendiğinde boyutları ayarla
+            UpdatePanelSizes();
+        }
+
+        private void BaseMenuPage_Resize(object sender, EventArgs e)
+        {
+            // Boyut değiştiğinde panelleri güncelle
+            UpdatePanelSizes();
+        }
+
+        private void UpdatePanelSizes()
+        {
+            if (MainContentPanel != null && this.Width > 0 && this.Height > 0)
+            {
+                MainContentPanel.Size = new Size(this.Width - 60, this.Height - 90);
+            }
         }
 
         /// <summary>
@@ -122,7 +146,8 @@ namespace DernekTakipSistemi.Pages
                 Location = location,
                 Size = size,
                 BackColor = Color.White,
-                BorderStyle = BorderStyle.FixedSingle
+                BorderStyle = BorderStyle.FixedSingle,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right
             };
         }
     }

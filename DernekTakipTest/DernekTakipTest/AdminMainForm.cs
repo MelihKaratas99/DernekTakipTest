@@ -59,9 +59,6 @@ namespace DernekTakipSistemi
             this.BackColor = LightGray;
             this.MinimumSize = new Size(1200, 700);
             this.WindowState = FormWindowState.Maximized;
-
-            // Icon ayarları (opsiyonel)
-            this.Icon = null;
         }
 
         private void CreateHeader()
@@ -170,11 +167,22 @@ namespace DernekTakipSistemi
 
         private void CreateContentArea()
         {
+            // DÜZELTME: Content panel'i Fill yerine manual olarak konumlandır
             contentPanel = new Panel
             {
-                Dock = DockStyle.Fill,
+                Location = new Point(250, 60), // Sidebar genişliği (250) + Header yüksekliği (60)
+                Size = new Size(this.ClientSize.Width - 250, this.ClientSize.Height - 60),
                 BackColor = LightGray,
-                Padding = new Padding(0)
+                Padding = new Padding(0),
+                Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom
+            };
+
+            // Form resize olduğunda content panel boyutunu güncelle
+            this.Resize += (s, e) => {
+                if (contentPanel != null)
+                {
+                    contentPanel.Size = new Size(this.ClientSize.Width - 250, this.ClientSize.Height - 60);
+                }
             };
 
             this.Controls.Add(contentPanel);
@@ -204,7 +212,7 @@ namespace DernekTakipSistemi
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Sayfa yüklenirken hata: {ex.Message}", "Hata",
+                MessageBox.Show($"Sayfa yüklenirken hata: {ex.Message}\n\nDetay: {ex.StackTrace}", "Hata",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }

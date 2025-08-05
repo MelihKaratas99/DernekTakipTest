@@ -170,63 +170,40 @@ namespace DernekTakipSistemi
 
             try
             {
+                System.Diagnostics.Debug.WriteLine("TumUyeleriGetir başladı...");
+
+                if (dbHelper == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("dbHelper null!");
+                    MessageBox.Show("Veritabanı bağlantısı bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return uyeler;
+                }
+
                 using (var connection = dbHelper.GetConnection())
                 {
+                    if (connection == null)
+                    {
+                        System.Diagnostics.Debug.WriteLine("Connection null!");
+                        return uyeler;
+                    }
+
                     connection.Open();
+                    System.Diagnostics.Debug.WriteLine("Veritabanı bağlantısı açıldı.");
+
                     string query = "SELECT * FROM Uyeler ORDER BY Ad, Soyad";
 
                     using (var command = new OleDbCommand(query, connection))
                     using (var reader = command.ExecuteReader())
                     {
+                        System.Diagnostics.Debug.WriteLine("Query çalıştırıldı.");
+
+                        int rowCount = 0;
                         while (reader.Read())
                         {
-                            uyeler.Add(new Uye
+                            rowCount++;
+                            try
                             {
-                                UyeID = SafeGetInt(reader, "UyeID"),
-                                TC = SafeGetString(reader, "TC"),
-                                Ad = SafeGetString(reader, "Ad"),
-                                Soyad = SafeGetString(reader, "Soyad"),
-                                Telefon = SafeGetString(reader, "Telefon"),
-                                Email = SafeGetString(reader, "Email"),
-                                Adres = SafeGetString(reader, "Adres"),
-                                UyelikTarihi = SafeGetDateTime(reader, "UyelikTarihi"),
-                                UyelikDurumu = SafeGetString(reader, "UyelikDurumu", "Aktif"),
-                                AidatBorcu = SafeGetDecimal(reader, "AidatBorcu"),
-                                SonOdemeTarihi = SafeGetNullableDateTime(reader, "SonOdemeTarihi")
-                            });
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Üyeler getirilirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            return uyeler;
-        }
-
-        /// <summary>
-        /// ID'ye göre üye getirir
-        /// </summary>
-        public Uye UyeGetir(int uyeID)
-        {
-            try
-            {
-                using (var connection = dbHelper.GetConnection())
-                {
-                    connection.Open();
-                    string query = "SELECT * FROM Uyeler WHERE UyeID = ?";
-
-                    using (var command = new OleDbCommand(query, connection))
-                    {
-                        command.Parameters.AddWithValue("@UyeID", uyeID);
-
-                        using (var reader = command.ExecuteReader())
-                        {
-                            if (reader.Read())
-                            {
-                                return new Uye
+                                var uye = new Uye
                                 {
                                     UyeID = SafeGetInt(reader, "UyeID"),
                                     TC = SafeGetString(reader, "TC"),
@@ -240,6 +217,111 @@ namespace DernekTakipSistemi
                                     AidatBorcu = SafeGetDecimal(reader, "AidatBorcu"),
                                     SonOdemeTarihi = SafeGetNullableDateTime(reader, "SonOdemeTarihi")
                                 };
+
+                                uyeler.Add(uye);
+                                System.Diagnostics.Debug.WriteLine($"Üye eklendi: {uye.AdSoyad}");
+                            }
+                            catch (Exception rowEx)
+                            {
+                                System.Diagnostics.Debug.WriteLine($"Satır {rowCount} okuma hatası: {rowEx.Message}");
+                            }
+                        }
+
+                        System.Diagnostics.Debug.WriteLine($"Toplam {uyeler.Count} üye okundu.");
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                string errorMsg = $"Üyeler getirilirken hata: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"{errorMsg}\nStackTrace: {ex.StackTrace}");
+                MessageBox.Show(errorMsg, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return uyeler;
+        }
+
+        /// <summary>
+        /// ID'ye göre üye getirir
+        /// </summary>
+        /// <summary>
+        /// ID'ye göre üye getirir - Debug versiyonu
+        /// </summary>
+        public Uye UyeGetir(int uyeID)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine($"UyeGetir başladı - Aranan UyeID: {uyeID}");
+
+                if (dbHelper == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("dbHelper null!");
+                    return null;
+                }
+
+                using (var connection = dbHelper.GetConnection())
+                {
+                    if (connection == null)
+                    {
+                        System.Diagnostics.Debug.WriteLine("Connection null!");
+                        return null;
+                    }
+
+                    connection.Open();
+                    System.Diagnostics.Debug.WriteLine("Veritabanı bağlantısı açıldı.");
+
+                    string query = "SELECT * FROM Uyeler WHERE UyeID = ?";
+                    System.Diagnostics.Debug.WriteLine($"SQL Query: {query}");
+
+                    using (var command = new OleDbCommand(query, connection))
+                    {
+                        command.Parameters.Add("@UyeID", OleDbType.Integer).Value = uyeID;
+                        System.Diagnostics.Debug.WriteLine($"Parametre eklendi: UyeID = {uyeID}");
+
+                        using (var reader = command.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                System.Diagnostics.Debug.WriteLine("Üye bulundu! Veri okunuyor...");
+
+                                var uye = new Uye
+                                {
+                                    UyeID = SafeGetInt(reader, "UyeID"),
+                                    TC = SafeGetString(reader, "TC"),
+                                    Ad = SafeGetString(reader, "Ad"),
+                                    Soyad = SafeGetString(reader, "Soyad"),
+                                    Telefon = SafeGetString(reader, "Telefon"),
+                                    Email = SafeGetString(reader, "Email"),
+                                    Adres = SafeGetString(reader, "Adres"),
+                                    UyelikTarihi = SafeGetDateTime(reader, "UyelikTarihi"),
+                                    UyelikDurumu = SafeGetString(reader, "UyelikDurumu", "Aktif"),
+                                    AidatBorcu = SafeGetDecimal(reader, "AidatBorcu"),
+                                    SonOdemeTarihi = SafeGetNullableDateTime(reader, "SonOdemeTarihi")
+                                };
+
+                                System.Diagnostics.Debug.WriteLine($"Üye başarıyla okundu: {uye.AdSoyad} (ID: {uye.UyeID})");
+                                return uye;
+                            }
+                            else
+                            {
+                                System.Diagnostics.Debug.WriteLine($"UyeID {uyeID} ile eşleşen üye bulunamadı!");
+
+                                // Tüm üyeleri listele (debug için)
+                                connection.Close();
+                                connection.Open();
+
+                                using (var allCommand = new OleDbCommand("SELECT UyeID, Ad, Soyad FROM Uyeler", connection))
+                                using (var allReader = allCommand.ExecuteReader())
+                                {
+                                    System.Diagnostics.Debug.WriteLine("=== Mevcut tüm üyeler ===");
+                                    while (allReader.Read())
+                                    {
+                                        int id = SafeGetInt(allReader, "UyeID");
+                                        string ad = SafeGetString(allReader, "Ad");
+                                        string soyad = SafeGetString(allReader, "Soyad");
+                                        System.Diagnostics.Debug.WriteLine($"UyeID: {id}, Ad: {ad}, Soyad: {soyad}");
+                                    }
+                                }
                             }
                         }
                     }
@@ -247,7 +329,9 @@ namespace DernekTakipSistemi
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Üye getirilirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                string errorMsg = $"Üye getirilirken hata: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"{errorMsg}\nStackTrace: {ex.StackTrace}");
+                MessageBox.Show(errorMsg, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
             return null;

@@ -294,6 +294,102 @@ namespace DernekTakipSistemi
         }
 
         /// <summary>
+        /// Kullanıcı günceller
+        /// </summary>
+        public bool UpdateUser(User user)
+        {
+            try
+            {
+                if (!user.IsValid())
+                {
+                    MessageBox.Show(user.GetValidationError(), "Doğrulama Hatası", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return false;
+                }
+
+                // Kullanıcı adı tekrarı kontrolü (mevcut kullanıcı hariç)
+                if (IsUsernameExists(user.KullaniciAdi, user.UserID))
+                {
+                    MessageBox.Show("Bu kullanıcı adı zaten kullanılıyor.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return false;
+                }
+
+                using (var connection = dbHelper.GetConnection())
+                {
+                    connection.Open();
+
+                    // Şifre güncelleme var mı kontrol et
+                    string query = string.IsNullOrEmpty(user.Sifre) ?
+                        @"UPDATE Users SET KullaniciAdi=?, Ad=?, Soyad=?, Email=?, Role=?, IsActive=?, UyeID=? WHERE UserID=?" :
+                        @"UPDATE Users SET KullaniciAdi=?, Sifre=?, Ad=?, Soyad=?, Email=?, Role=?, IsActive=?, UyeID=? WHERE UserID=?";
+
+                    using (var command = new OleDbCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@KullaniciAdi", user.KullaniciAdi);
+
+                        if (!string.IsNullOrEmpty(user.Sifre))
+                        {
+                            command.Parameters.AddWithValue("@Sifre", user.Sifre);
+                        }
+
+                        command.Parameters.AddWithValue("@Ad", user.Ad);
+                        command.Parameters.AddWithValue("@Soyad", user.Soyad);
+                        command.Parameters.AddWithValue("@Email", user.Email ?? "");
+                        command.Parameters.AddWithValue("@Role", (int)user.Role);
+                        command.Parameters.AddWithValue("@IsActive", user.IsActive);
+                        command.Parameters.AddWithValue("@UyeID", user.UyeID ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@UserID", user.UserID);
+
+                        int result = command.ExecuteNonQuery();
+
+                        if (result > 0)
+                        {
+                            MessageBox.Show("Kullanıcı başarıyla güncellendi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            return true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Kullanıcı güncellenirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Kullanıcı adı var mı kontrol et (belirli ID hariç)
+        /// </summary>
+        private bool IsUsernameExists(string kullaniciAdi, int excludeUserID = 0)
+        {
+            try
+            {
+                using (var connection = dbHelper.GetConnection())
+                {
+                    connection.Open();
+                    string query = excludeUserID > 0 ?
+                        "SELECT COUNT(*) FROM Users WHERE KullaniciAdi = ? AND UserID <> ?" :
+                        "SELECT COUNT(*) FROM Users WHERE KullaniciAdi = ?";
+
+                    using (var command = new OleDbCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@KullaniciAdi", kullaniciAdi);
+                        if (excludeUserID > 0)
+                            command.Parameters.AddWithValue("@UserID", excludeUserID);
+
+                        object result = command.ExecuteScalar();
+                        int count = result != null ? Convert.ToInt32(result) : 0;
+                        return count > 0;
+                    }
+                }
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
         /// Tüm kullanıcıları getir - UyelikTarihi ile güvenli okuma
         /// </summary>
         public List<User> GetAllUsers()

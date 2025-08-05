@@ -77,6 +77,9 @@
     <Compile Include="IMenuPage.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="KullaniciEkleDuzenleForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="LoginForm.cs">
       <SubType>Form</SubType>
     </Compile>
