@@ -1,0 +1,11 @@
+C:\Users\hp\Desktop\DernekTakipTest\DernekTakipTest\DernekTakipTest\obj\Debug\DernekTakipTest.csproj.AssemblyReference.cache
+C:\Users\hp\Desktop\DernekTakipTest\DernekTakipTest\DernekTakipTest\obj\Debug\DernekTakipTest.Form1.resources
+C:\Users\hp\Desktop\DernekTakipTest\DernekTakipTest\DernekTakipTest\obj\Debug\DernekTakipTest.Properties.Resources.resources
+C:\Users\hp\Desktop\DernekTakipTest\DernekTakipTest\DernekTakipTest\obj\Debug\DernekTakipTest.csproj.GenerateResource.cache
+C:\Users\hp\Desktop\DernekTakipTest\DernekTakipTest\DernekTakipTest\obj\Debug\DernekTakipTest.csproj.CoreCompileInputs.cache
+C:\Users\hp\Desktop\DernekTakipTest\DernekTakipTest\DernekTakipTest\bin\Debug\DernekTakipTest.exe.config
+C:\Users\hp\Desktop\DernekTakipTest\DernekTakipTest\DernekTakipTest\bin\Debug\DernekTakipTest.exe
+C:\Users\hp\Desktop\DernekTakipTest\DernekTakipTest\DernekTakipTest\bin\Debug\DernekTakipTest.pdb
+C:\Users\hp\Desktop\DernekTakipTest\DernekTakipTest\DernekTakipTest\obj\Debug\DernekTakipTest.exe
+C:\Users\hp\Desktop\DernekTakipTest\DernekTakipTest\DernekTakipTest\obj\Debug\DernekTakipTest.pdb
+C:\Users\hp\Desktop\DernekTakipTest\DernekTakipTest\DernekTakipTest\obj\Debug\DernekTakipTest.exe.config
