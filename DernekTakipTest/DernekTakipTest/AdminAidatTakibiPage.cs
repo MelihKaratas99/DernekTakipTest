@@ -18,7 +18,23 @@ namespace DernekTakipSistemi.Pages.Admin
 
         public AdminAidatTakibiPage()
         {
-            uyeService = new UyeService();
+            // UyeService'i güvenli şekilde başlat
+            InitializeUyeService();
+        }
+
+        private void InitializeUyeService()
+        {
+            try
+            {
+                uyeService = new UyeService();
+                System.Diagnostics.Debug.WriteLine("UyeService başarıyla oluşturuldu.");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"UyeService oluşturulurken hata: {ex.Message}");
+                MessageBox.Show($"Veritabanı bağlantısı kurulamadı: {ex.Message}",
+                    "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         protected override void InitializePage()
@@ -169,27 +185,85 @@ namespace DernekTakipSistemi.Pages.Admin
         {
             try
             {
+                // Null kontrolleri
+                if (aidatDataGrid == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("aidatDataGrid null!");
+                    return;
+                }
+
+                if (uyeService == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("uyeService null - yeniden başlatılıyor...");
+                    InitializeUyeService();
+
+                    if (uyeService == null)
+                    {
+                        MessageBox.Show("Veritabanı servis bağlantısı kurulamadı.", "Hata",
+                            MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                }
+
+                // DataGrid'i temizle
                 aidatDataGrid.Rows.Clear();
+
+                // Verileri getir
                 List<Uye> uyeler = uyeService.TumUyeleriGetir();
+
+                if (uyeler == null)
+                {
+                    System.Diagnostics.Debug.WriteLine("Uyeler listesi null döndü!");
+                    MessageBox.Show("Üye verileri alınamadı.", "Uyarı",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                System.Diagnostics.Debug.WriteLine($"Toplam {uyeler.Count} üye bulundu.");
 
                 foreach (Uye uye in uyeler)
                 {
-                    string durum = uye.AidatBorcu > 0 ? "Borçlu" : "Güncel";
-                    string sonOdeme = uye.SonOdemeTarihi?.ToString("dd.MM.yyyy") ?? "Hiç";
+                    if (uye == null)
+                    {
+                        System.Diagnostics.Debug.WriteLine("Null üye bulundu - atlanıyor.");
+                        continue;
+                    }
 
-                    aidatDataGrid.Rows.Add(
-                        uye.UyeID,
-                        uye.AdSoyad,
-                        uye.TC,
-                        uye.AidatBorcu,
-                        sonOdeme,
-                        durum
-                    );
+                    try
+                    {
+                        string durum = uye.AidatBorcu > 0 ? "Borçlu" : "Güncel";
+                        string sonOdeme = uye.SonOdemeTarihi?.ToString("dd.MM.yyyy") ?? "Hiç";
+
+                        aidatDataGrid.Rows.Add(
+                            uye.UyeID,
+                            uye.AdSoyad ?? "Bilinmeyen",
+                            uye.TC ?? "",
+                            uye.AidatBorcu,
+                            sonOdeme,
+                            durum
+                        );
+                    }
+                    catch (Exception rowEx)
+                    {
+                        System.Diagnostics.Debug.WriteLine($"Satır eklenirken hata: {rowEx.Message}");
+                        // Devam et, diğer satırları eklemeye çalış
+                    }
                 }
+
+                System.Diagnostics.Debug.WriteLine($"DataGrid'e {aidatDataGrid.Rows.Count} satır eklendi.");
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Aidat verileri yüklenirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                string errorMsg = $"Aidat verileri yüklenirken hata: {ex.Message}";
+                System.Diagnostics.Debug.WriteLine($"{errorMsg}\nStackTrace: {ex.StackTrace}");
+
+                MessageBox.Show(errorMsg, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                // Hata durumunda boş bir mesaj göster
+                if (aidatDataGrid != null)
+                {
+                    aidatDataGrid.Rows.Clear();
+                }
             }
         }
 
@@ -237,30 +311,58 @@ namespace DernekTakipSistemi.Pages.Admin
         private void RefreshButton_Click(object sender, EventArgs e)
         {
             LoadAidatlar();
-            aramaTextBox.Clear();
-            durumComboBox.SelectedIndex = 0;
+            if (aramaTextBox != null) aramaTextBox.Clear();
+            if (durumComboBox != null) durumComboBox.SelectedIndex = 0;
         }
 
         private void AramaTextBox_TextChanged(object sender, EventArgs e)
         {
-            // Arama işlemi
-            LoadAidatlar(); // Basit yenileme - geliştirilecek
+            // Güvenli arama işlemi
+            try
+            {
+                LoadAidatlar(); // Basit yenileme - geliştirilecek
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Arama sırasında hata: {ex.Message}");
+            }
         }
 
         private void DurumComboBox_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Filtreleme işlemi
-            LoadAidatlar(); // Basit yenileme - geliştirilecek
+            // Güvenli filtreleme işlemi
+            try
+            {
+                LoadAidatlar(); // Basit yenileme - geliştirilecek
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Filtreleme sırasında hata: {ex.Message}");
+            }
         }
 
         public override void LoadPage()
         {
-            LoadAidatlar();
+            try
+            {
+                LoadAidatlar();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"LoadPage hatası: {ex.Message}");
+            }
         }
 
         public override void RefreshPage()
         {
-            LoadAidatlar();
+            try
+            {
+                LoadAidatlar();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"RefreshPage hatası: {ex.Message}");
+            }
         }
     }
 }

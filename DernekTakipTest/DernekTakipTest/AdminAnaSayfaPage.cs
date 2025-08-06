@@ -26,7 +26,7 @@ namespace DernekTakipSistemi.Pages.Admin
 
         private void CreateWelcomeSection()
         {
-            Panel welcomePanel = CreateContentPanel(new Point(0, 0), new Size(970, 80));
+            Panel welcomePanel = CreateContentPanel(new Point(0, 0), new Size(950, 80));
 
             Label welcomeLabel = new Label
             {
@@ -50,9 +50,10 @@ namespace DernekTakipSistemi.Pages.Admin
             MainContentPanel.Controls.Add(welcomePanel);
         }
 
+
         private void CreateStatsSection()
         {
-            Panel statsPanel = CreateContentPanel(new Point(0, 100), new Size(970, 120));
+            Panel statsPanel = CreateContentPanel(new Point(0, 100), new Size(950, 120));
 
             Label statsTitle = new Label
             {
@@ -69,6 +70,7 @@ namespace DernekTakipSistemi.Pages.Admin
             statsPanel.Controls.Add(statsTitle);
             MainContentPanel.Controls.Add(statsPanel);
         }
+
 
         private void CreateStatCards(Panel parent)
         {
@@ -139,7 +141,7 @@ namespace DernekTakipSistemi.Pages.Admin
 
         private void CreateQuickActionsSection()
         {
-            Panel actionsPanel = CreateContentPanel(new Point(0, 240), new Size(970, 150));
+            Panel actionsPanel = CreateContentPanel(new Point(0, 240), new Size(950, 150));
 
             Label actionsTitle = new Label
             {
@@ -157,8 +159,8 @@ namespace DernekTakipSistemi.Pages.Admin
             Button settingsBtn = CreateActionButton("⚙️ Sistem Ayarları", new Point(500, 50), DarkGray);
 
             actionsPanel.Controls.AddRange(new Control[] {
-                actionsTitle, newMemberBtn, viewReportsBtn, managePaymentsBtn, settingsBtn
-            });
+        actionsTitle, newMemberBtn, viewReportsBtn, managePaymentsBtn, settingsBtn
+    });
 
             MainContentPanel.Controls.Add(actionsPanel);
         }

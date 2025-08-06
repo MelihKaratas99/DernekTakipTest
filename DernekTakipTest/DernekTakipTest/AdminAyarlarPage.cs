@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -51,14 +52,14 @@ namespace DernekTakipSistemi.Pages.Admin
             Button kullaniciListeleBtn = CreateActionButton("📋 Kullanıcı Listesi", new Point(220, 100), AccentColor);
             Button sifreResetBtn = CreateActionButton("🔑 Şifre Sıfırla", new Point(390, 100), WarningColor);
 
-            // Event handlers
-            kullaniciEkleBtn.Click += (s, e) => MessageBox.Show("Kullanıcı ekleme formu burada açılacak.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            kullaniciListeleBtn.Click += (s, e) => MessageBox.Show("Kullanıcı listesi burada görüntülenecek.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            // Event handlers - Gerçek işlevler
+            kullaniciEkleBtn.Click += KullaniciEkleBtn_Click;
+            kullaniciListeleBtn.Click += KullaniciListeleBtn_Click;
             sifreResetBtn.Click += (s, e) => MessageBox.Show("Şifre sıfırlama formu burada açılacak.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             parent.Controls.AddRange(new Control[] {
-                userTitle, kullaniciEkleBtn, kullaniciListeleBtn, sifreResetBtn
-            });
+        userTitle, kullaniciEkleBtn, kullaniciListeleBtn, sifreResetBtn
+    });
         }
 
         private void CreateSystemSettingsSection(Panel parent)
@@ -111,6 +112,78 @@ namespace DernekTakipSistemi.Pages.Admin
             });
         }
 
+        private void KullaniciEkleBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                KullaniciEkleDuzenleForm form = new KullaniciEkleDuzenleForm();
+                if (form.ShowDialog() == DialogResult.OK)
+                {
+                    MessageBox.Show("Kullanıcı başarıyla eklendi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Kullanıcı ekleme formu açılırken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void KullaniciListeleBtn_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                UserService userService = new UserService();
+                List<User> users = userService.GetAllUsers();
+
+                // Basit liste formu
+                Form listForm = new Form
+                {
+                    Text = "Kullanıcı Listesi",
+                    Size = new Size(800, 600),
+                    StartPosition = FormStartPosition.CenterParent
+                };
+
+                DataGridView userGrid = new DataGridView
+                {
+                    Dock = DockStyle.Fill,
+                    ReadOnly = true,
+                    AllowUserToAddRows = false,
+                    AllowUserToDeleteRows = false,
+                    SelectionMode = DataGridViewSelectionMode.FullRowSelect,
+                    BackgroundColor = Color.White
+                };
+
+                userGrid.Columns.Add("UserID", "ID");
+                userGrid.Columns.Add("KullaniciAdi", "Kullanıcı Adı");
+                userGrid.Columns.Add("AdSoyad", "Ad Soyad");
+                userGrid.Columns.Add("Email", "E-posta");
+                userGrid.Columns.Add("Role", "Rol");
+                userGrid.Columns.Add("IsActive", "Durum");
+                userGrid.Columns.Add("KayitTarihi", "Kayıt Tarihi");
+
+                userGrid.Columns[0].Visible = false;
+
+                foreach (User user in users)
+                {
+                    userGrid.Rows.Add(
+                        user.UserID,
+                        user.KullaniciAdi,
+                        user.AdSoyad,
+                        user.Email,
+                        user.RoleText,
+                        user.IsActive ? "Aktif" : "Pasif",
+                        user.KayitTarihi.ToString("dd.MM.yyyy")
+                    );
+                }
+
+                listForm.Controls.Add(userGrid);
+                listForm.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Kullanıcı listesi alınırken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
         private void DbTestBtn_Click(object sender, EventArgs e)
         {
             try
